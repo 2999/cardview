@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
 
-<title>zoom - Cardview</title>
+<title>rotate - Cardview</title>
 
 <script type="text/javascript" src="../../src/cardview.js"></script>
 
@@ -31,22 +31,24 @@ var data = [
 		img: '../imgs/img4.jpg',
 		title: 'Card 4',
 		text: 'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
-	},
+	}/*,
 	{
 		img: '../imgs/img5.jpg',
 		title: 'Card 5',
 		text: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.'
-	}	
+	}*/	
 ];
 
 function loaded () {
 	deck = new CardView('#wrapper', {
-		effect: 'zoom',
-		dataset: data,
+		direction: 'v',
+ 		dataset: data,
 		onUpdateContent: function (el, data, index) {
-			el.querySelector('img').src = data.img;
-			el.querySelector('h3').innerHTML = data.title;
-			el.querySelector('p').innerHTML = data.text;
+			if(data){
+				el.querySelector('img').src = data.img;
+				el.querySelector('h3').innerHTML = data.title;
+				el.querySelector('p').innerHTML = data.text;
+			}
 		}
 	});
 }

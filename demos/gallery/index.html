@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
 
-<title>Cardview</title>
+<title>gallery - Cardview</title>
 
 <script type="text/javascript" src="../../src/cardview.js"></script>
 
@@ -42,8 +42,9 @@ var data = [
 function loaded () {
 	deck = new CardView('#wrapper', {
 		direction: 'h',
+		effect: 'gallery',
 		dataset: data,
-		onUpdateContent: function (el, data) {
+		onUpdateContent: function (el, data, index) {
 			el.querySelector('img').src = data.img;
 			el.querySelector('h3').innerHTML = data.title;
 			el.querySelector('p').innerHTML = data.text;

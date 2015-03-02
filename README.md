@@ -14,3 +14,19 @@ You can watch a screencast here http://youtu.be/zWYNUFuKI5s or play with the fol
 [Horizontal](http://lab.cubiq.org/cardview/demos/horizontal/)
 
 [Zoom](http://lab.cubiq.org/cardview/demos/zoom/)
+
+
+=========
+
+来源：https://github.com/cubiq/cardview
+
+对其做了修改：
+
+增加了Effect gallery，
+并对代码进行了较多修改。
+
+请至/demos/下查看demo。
+
+感谢原作者。
+
+
