@@ -423,12 +423,11 @@
 			goToPage: function(n) {
 				if (n == 'last') {
 					n = this.pageCount - 1;
-				}
-				/* else if (n == 'prev') {
+				}else if (n == 'prev') {
 					n--;
 				} else if (n == 'next') {
 					n++;
-				}*/
+				}
 
 				if (n < 0) {
 					n = 0;
@@ -446,14 +445,13 @@
 				if (next >= this.pageCount) {
 					next = 0;
 				}
-
-				/*this.prevCard = 2;
-				this.currCard = 0;
-				this.nextCard = 1;*/
 				this.prevCard = this.cardsLen - 1; //这里有改变，原来是2
 				this.currCard = 0;
 				this.nextCard = 1;
 
+				//注意上面：card的计数，与page的计数，是不同的(card为dom元素，page为数组)，要区分清楚。但它们均从0开始。
+
+				//onUpdateContent三个参数的意义分别是：需要渲染的DOM，需要用到的数据，该数据在全部数据中的“页码”（也就是第几页）
 				this.options.onUpdateContent(this.cards[this.currCard], this.options.dataset[n], n);
 				//对当前显示的card添加一个class
 				this.cards[this.currCard].classList.add('current-card');

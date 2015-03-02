@@ -20,10 +20,11 @@ You can watch a screencast here http://youtu.be/zWYNUFuKI5s or play with the fol
 
 来源：https://github.com/cubiq/cardview
 
-对其做了修改：
+对其做了如下修改：
 
 增加了Effect gallery，
-并对代码进行了较多修改。
+增加了对CMD支持，
+对代码其它部分进行了较多改动。
 
 请至/demos/下查看demo。
 
