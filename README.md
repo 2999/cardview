@@ -7,26 +7,25 @@ To reduce memory footprint only 3 cards are loaded at any given time but you can
 
 The code is still a bit messy and betaish but maybe you can make good use of it.
 
-You can watch a screencast here http://youtu.be/zWYNUFuKI5s or play with the following demos:
-
-[Vertical](http://lab.cubiq.org/cardview/demos/simple/)
-
-[Horizontal](http://lab.cubiq.org/cardview/demos/horizontal/)
-
-[Zoom](http://lab.cubiq.org/cardview/demos/zoom/)
-
-
 =========
 
 来源：https://github.com/cubiq/cardview
 
 对其做了如下修改：
 
-增加了Effect gallery，
-增加了对CMD支持，
-对代码其它部分进行了较多改动。
+- 增加了Effect gallery，
+- 增加了对CMD支持，
+- 对代码其它部分进行了较多改动。
 
-请至/demos/下查看demo。
+请至/demos/下查看demo:
+
+- [gallery]()
+
+- [rotate]()
+
+- [slide]()
+
+- [zoom]()
 
 感谢原作者。
 
