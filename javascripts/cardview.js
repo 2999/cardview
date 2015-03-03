@@ -1,7 +1,7 @@
 /**********************************************
  *
- * 添加了Effect gallery，并进行了大量的改造，以致于此组件目前只能友好地支持效果：gallery
- * 其它原来的效果都有影响，不能正常使用，正在修改ing
+ * 添加了Effect gallery，并进行了大量的改造，以致于此组件目前只能友好地支持效果：gallery  slide
+ * rotate zoom不能正常使用，正在修改ing
  *
  **********************************************/
 ;(function() {
@@ -400,7 +400,7 @@
 					this.cards[this.prevCard].style.zIndex = '99';
 
 					this.cards[this.currCard].style[utils.style.transform] = 'translate(0,0)' + this.translateZ;
-					this.cards[this.prevCard].style[utils.style.transform] = 'translate(' + (this.options.direction == 'v' ? '100%,0' : '0,100%') + ')' + this.translateZ;
+					this.cards[this.prevCard].style[utils.style.transform] = 'translate(' + (this.options.direction == 'v' ? '0,-100%' : '-100%,0') + ')' + this.translateZ;
 					this.cards[this.nextCard].style[utils.style.transform] = 'translate(' + (this.options.direction == 'v' ? '0,100%' : '100%,0') + ')' + this.translateZ;
 				}
 			},
@@ -708,89 +708,72 @@
 			/**********************************************
 			 *
 			 * Effect Slide
+			 * 约定：手向左、向上（即坐标轴负向）滑动时，nextCard滑入，盖在currCard之上。
+			 *      手向右、向下（即坐标轴正向）滑动时，currCard滑走，露出下面的prevCard。 
 			 *
 			 **********************************************/
 			_effectSlideInit: function() {
 				if (this.direction < 0) {
-					if (this.options.direction == 'v') {
-						this.cardToMove = this.currCard;
-						this.cardToStay = this.prevCard;
-					} else {
-						this.cardToMove = this.currCard;
-						this.cardToStay = this.prevCard;
-					}
+					this.cardToStay = this.currCard;
+					this.cardToMove = this.nextCard;
 				} else {
-					if (this.options.direction == 'v') {
-						this.cardToMove = this.nextCard;
-						this.cardToStay = this.currCard;
-					} else {
-						this.cardToMove = this.nextCard;
-						this.cardToStay = this.currCard;
-					}
+					this.cardToMove = this.currCard;
+					this.cardToStay = this.prevCard;
 				}
-
 				var cardToStay = this.cards[this.cardToStay].style;
 				cardToStay[utils.style.transform] = 'translate(0,0)' + this.translateZ;
-			},
-
-			_effectSlideEnd: function() {
-				var cardToMove = this.cards[this.cardToMove].style,
-					cardToStay = this.cards[this.cardToStay].style;
-
-				cardToMove[utils.style.transitionDuration] = this.options.duration + 's';
-				cardToStay[utils.style.transitionDuration] = this.options.duration + 's';
-
-				if (this.direction > 0) {
-					if (this.options.direction == 'v') {
-						cardToMove[utils.style.transform] = 'translate(0,100%)' + this.translateZ;
-					} else {
-						cardToMove[utils.style.transform] = 'translate(-100%,0)' + this.translateZ;
-					}
-				} else {
-					cardToMove[utils.style.transform] = 'translate(0,0)' + this.translateZ;
-				}
 			},
 
 			_effectSlideMove: function(distance) {
 				if (this.options.direction == 'v') {
 					if (this.direction > 0) {
-						distance = 100 + 100 / this.wrapperSize * distance;
-					} else {
 						distance = 100 / this.wrapperSize * distance;
+					} else {
+						distance = 100 + 100 / this.wrapperSize * distance;
 					}
-
 					this.cards[this.cardToMove].style[utils.style.transform] = 'translate(0,' + distance + '%)' + this.translateZ;
 				} else {
 					if (this.direction > 0) {
-						distance = -100 - 100 / this.wrapperSize * distance;
+						distance = 100 / this.wrapperSize * distance;
 					} else {
-						distance = -100 / this.wrapperSize * distance;
+						distance = 100 + 100 / this.wrapperSize * distance;
 					}
-
 					this.cards[this.cardToMove].style[utils.style.transform] = 'translate(' + distance + '%,0)' + this.translateZ;
 				}
 			},
-
+			//动画没有完成，回归原位
+			_effectSlideEnd: function() {
+				var cardToMove = this.cards[this.cardToMove].style,
+					cardToStay = this.cards[this.cardToStay].style;
+				cardToMove[utils.style.transitionDuration] = this.options.duration + 's';
+				cardToStay[utils.style.transitionDuration] = this.options.duration + 's';
+				if (this.direction > 0) {
+					cardToMove[utils.style.transform] = 'translate(0,0)' + this.translateZ;
+				} else {
+					if (this.options.direction == 'v') {
+						cardToMove[utils.style.transform] = 'translate(0,100%)' + this.translateZ;
+					}else{
+						cardToMove[utils.style.transform] = 'translate(100%,0)' + this.translateZ;
+					}
+				}
+			},
+			//动画顺利完成了
 			_effectSlideClose: function() {
 				var cardToMove = this.cards[this.cardToMove],
 					cardToStay = this.cards[this.cardToStay];
-
 				this.initiated = 0;
 				this.disable();
-
 				cardToMove.style[utils.style.transitionDuration] = this.options.duration + 's';
 				cardToStay.style[utils.style.transitionDuration] = this.options.duration + 's';
-
 				if (this.direction > 0) {
-					cardToMove.style[utils.style.transform] = 'translate(0,0)' + this.translateZ;
-				} else {
 					if (this.options.direction == 'v') {
 						cardToMove.style[utils.style.transform] = 'translate(0,100%)' + this.translateZ;
-					} else {
-						cardToMove.style[utils.style.transform] = 'translate(-100%,0)' + this.translateZ;
+					}else{
+						cardToMove.style[utils.style.transform] = 'translate(100%,0)' + this.translateZ;
 					}
+				} else {
+					cardToMove.style[utils.style.transform] = 'translate(0,0)' + this.translateZ;
 				}
-
 				utils.addEvent(cardToMove, 'transitionend', this);
 				utils.addEvent(cardToMove, 'webkitTransitionEnd', this);
 				utils.addEvent(cardToMove, 'oTransitionEnd', this);
@@ -809,6 +792,29 @@
 				} else {
 					this.cardToMove = this.currCard;
 					this.cardToStay = this.prevCard;
+				}
+			},
+			_effectGalleryMove: function(distance) {
+				if (this.options.direction == 'v') {
+					if (this.direction > 0) { //-1：手向左、向上滑，1：手向右、向下滑
+						distance = 100 / this.wrapperSize * distance;
+						this.cards[this.cardToMove].style[utils.style.transform] = 'translate(0,' + distance + '%)' + this.translateZ;
+						this.cards[this.cardToStay].style[utils.style.transform] = 'translate(0,' + (distance - 100) + '%)' + this.translateZ;
+					} else {
+						distance = 100 / this.wrapperSize * distance;
+						this.cards[this.cardToMove].style[utils.style.transform] = 'translate(0,' + distance + '%)' + this.translateZ;
+						this.cards[this.cardToStay].style[utils.style.transform] = 'translate(0,' + (100 + distance) + '%)' + this.translateZ;
+					}
+				} else {
+					if (this.direction > 0) {
+						distance = 100 / this.wrapperSize * distance - 100;
+						this.cards[this.cardToMove].style[utils.style.transform] = 'translate(' + (100 + distance) + '%,0)' + this.translateZ;
+						this.cards[this.cardToStay].style[utils.style.transform] = 'translate(' + distance + '%,0)' + this.translateZ;
+					} else {
+						distance = 100 / this.wrapperSize * distance;
+						this.cards[this.cardToMove].style[utils.style.transform] = 'translate(' + distance + '%,0)' + this.translateZ;
+						this.cards[this.cardToStay].style[utils.style.transform] = 'translate(' + (100 + distance) + '%,0)' + this.translateZ;
+					}
 				}
 			},
 			//动画没有完成，回归原位
@@ -834,29 +840,6 @@
 					}else{
 						cardToMove[utils.style.transform] = 'translate(0,0)' + this.translateZ;
 						cardToStay[utils.style.transform] = 'translate(100%,0)' + this.translateZ;
-					}
-				}
-			},
-			_effectGalleryMove: function(distance) {
-				if (this.options.direction == 'v') {
-					if (this.direction > 0) { //-1：手向左、向上滑，1：手向右、向下滑
-						distance = 100 / this.wrapperSize * distance;
-						this.cards[this.cardToMove].style[utils.style.transform] = 'translate(0,' + distance + '%)' + this.translateZ;
-						this.cards[this.cardToStay].style[utils.style.transform] = 'translate(0,' + (distance - 100) + '%)' + this.translateZ;
-					} else {
-						distance = 100 / this.wrapperSize * distance;
-						this.cards[this.cardToMove].style[utils.style.transform] = 'translate(0,' + distance + '%)' + this.translateZ;
-						this.cards[this.cardToStay].style[utils.style.transform] = 'translate(0,' + (100 + distance) + '%)' + this.translateZ;
-					}
-				} else {
-					if (this.direction > 0) {
-						distance = 100 / this.wrapperSize * distance - 100;
-						this.cards[this.cardToMove].style[utils.style.transform] = 'translate(' + (100 + distance) + '%,0)' + this.translateZ;
-						this.cards[this.cardToStay].style[utils.style.transform] = 'translate(' + distance + '%,0)' + this.translateZ;
-					} else {
-						distance = 100 / this.wrapperSize * distance;
-						this.cards[this.cardToMove].style[utils.style.transform] = 'translate(' + distance + '%,0)' + this.translateZ;
-						this.cards[this.cardToStay].style[utils.style.transform] = 'translate(' + (100 + distance) + '%,0)' + this.translateZ;
 					}
 				}
 			},
