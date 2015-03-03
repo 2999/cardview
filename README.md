@@ -9,6 +9,7 @@ The code is still a bit messy and betaish but maybe you can make good use of it.
 
 =========
 
+HomePage：http://jiangzhizi.github.io/cardview/
 
 对其做了如下修改：
 
@@ -16,8 +17,7 @@ The code is still a bit messy and betaish but maybe you can make good use of it.
 - 增加了对CMD支持，
 - 对代码其它部分进行了较多改动。
 
-
-HomePage：http://jiangzhizi.github.io/cardview/
+Demos：
 
 - [gallery](http://jiangzhizi.github.io/cardview/demos/gallery/index.html)
 
