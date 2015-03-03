@@ -9,7 +9,6 @@ The code is still a bit messy and betaish but maybe you can make good use of it.
 
 =========
 
-来源：https://github.com/cubiq/cardview
 
 对其做了如下修改：
 
@@ -17,15 +16,16 @@ The code is still a bit messy and betaish but maybe you can make good use of it.
 - 增加了对CMD支持，
 - 对代码其它部分进行了较多改动。
 
-请至/demos/下查看demo:
 
-- [gallery]()
+HomePage：http://jiangzhizi.github.io/cardview/
 
-- [rotate]()
+- [gallery](http://jiangzhizi.github.io/cardview/demos/gallery/index.html)
 
-- [slide]()
+- [rotate](http://jiangzhizi.github.io/cardview/demos/rotate/index.html)
 
-- [zoom]()
+- [slide](http://jiangzhizi.github.io/cardview/demos/slide/index.html)
+
+- [zoom](http://jiangzhizi.github.io/cardview/demos/zoom/index.html)
 
 感谢原作者。
 
