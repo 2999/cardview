@@ -106,7 +106,7 @@
 			//根据数据的长度，删除多余的card，最多保留3个
 			//如果数组长度大于3，则对card节点进行处理：或添加、或删除
 			//如果数组长度为1、2，则也对card节点进行处理：或添加、或删除
-			//...
+			// to do...
 
 			this.options = {
 				direction: 'v',
@@ -141,11 +141,11 @@
 			this.effect = this.options.effect == 'rotate' || this.options.effect == 'zoom' || this.options.effect == 'slide' || this.options.effect == 'gallery' ? '_effect' + this.options.effect.charAt(0).toUpperCase() + this.options.effect.slice(1) : '_effectRotate';
 
 			this.page = 0;
-			this.pageCount = Math.max(this.options.dataset.length, this.cardsLen); //这里有改变，原来是3
+			this.pageCount = Math.max(this.options.dataset.length, this.cardsLen);
 
 			this.wrapper.style[utils.style.perspective] = this.options.perspective;
 
-			for (var i = 0; i < this.cardsLen; i++) { //这里有改变，原来是3
+			for (var i = 0; i < this.cardsLen; i++) {
 				this.cards[i].style[utils.style.transformOrigin] = this.effect == '_effectZoom' ? '50% 50%' : '0 100%';
 				this.cards[i].style[utils.style.transitionTimingFunction] = 'ease-out';
 			}
@@ -410,8 +410,8 @@
 			},
 
 			_updateContent: function() {
-				var newPage = this.page - this.direction, // 这里有改动，原先是加号
-					cardToUpdate = this.direction < 0 ? this.nextCard : this.prevCard; // 这里有改动，原先是>
+				var newPage = this.page - this.direction,
+					cardToUpdate = this.direction < 0 ? this.nextCard : this.prevCard;
 
 				if (newPage < 0) {
 					newPage = this.pageCount - 1;
@@ -449,7 +449,7 @@
 				if (next >= this.pageCount) {
 					next = 0;
 				}
-				this.prevCard = this.cardsLen - 1; //这里有改变，原来是2
+				this.prevCard = this.cardsLen - 1;
 				this.currCard = 0;
 				this.nextCard = 1;
 
@@ -541,7 +541,6 @@
 			},
 			//动画没有完成，回归原位
 			_effectRotateEnd: function() {
-				// return;
 				var cardToMove = this.cards[this.cardToMove].style,
 					cardToStay = this.cards[this.cardToStay].style;
 				cardToMove[utils.style.transitionDuration] = this.options.duration + 's';
@@ -567,7 +566,6 @@
 			},
 			//动画顺利完成了
 			_effectRotateClose: function() {
-				// return;
 				var cardToMove = this.cards[this.cardToMove],
 					cardToStay = this.cards[this.cardToStay];
 
