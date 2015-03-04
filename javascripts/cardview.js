@@ -1,13 +1,7 @@
-/**********************************************
- *
- * 添加了Effect gallery，并进行了大量的改造，以致于此组件目前只能友好地支持效果：gallery  slide
- * rotate zoom不能正常使用，正在修改ing
- *
- **********************************************/
 ;(function() {
 	var CardView = (function(window, document, Math) {
 
-		var rAF = window.requestAnimationFrame ||
+		var RAF = window.requestAnimationFrame ||
 			window.webkitRequestAnimationFrame ||
 			window.mozRequestAnimationFrame ||
 			window.oRequestAnimationFrame ||
@@ -108,7 +102,11 @@
 			this.wrapper = typeof el == 'string' ? document.querySelector(el) : el;
 			this.deck = this.wrapper = this.wrapper.children[0];
 			this.cards = this.deck.querySelectorAll('.card');
-			this.cardsLen = Math.min(this.cards.length, 3);
+			this.cardsLen = Math.min(this.cards.length, 3); //页面上最多需要3个.card
+			//根据数据的长度，删除多余的card，最多保留3个
+			//如果数组长度大于3，则对card节点进行处理：或添加、或删除
+			//如果数组长度为1、2，则也对card节点进行处理：或添加、或删除
+			// to do...
 
 			this.options = {
 				direction: 'v',
@@ -131,8 +129,9 @@
 			}
 
 			//如果只有一页，渲染之后直接返回
-			if (this.cardsLen <= 1) {
+			if (this.cardsLen <= 1 || this.options.dataset.length <= 1) {
 				this.options.onUpdateContent(this.cards[0], this.options.dataset[0], 1);
+				this.cards[0].style.zIndex = 100;
 				return;
 			}
 
@@ -142,11 +141,11 @@
 			this.effect = this.options.effect == 'rotate' || this.options.effect == 'zoom' || this.options.effect == 'slide' || this.options.effect == 'gallery' ? '_effect' + this.options.effect.charAt(0).toUpperCase() + this.options.effect.slice(1) : '_effectRotate';
 
 			this.page = 0;
-			this.pageCount = Math.max(this.options.dataset.length, this.cardsLen); //这里有改变，原来是3
+			this.pageCount = Math.max(this.options.dataset.length, this.cardsLen);
 
 			this.wrapper.style[utils.style.perspective] = this.options.perspective;
 
-			for (var i = 0; i < this.cardsLen; i++) { //这里有改变，原来是3
+			for (var i = 0; i < this.cardsLen; i++) {
 				this.cards[i].style[utils.style.transformOrigin] = this.effect == '_effectZoom' ? '50% 50%' : '0 100%';
 				this.cards[i].style[utils.style.transitionTimingFunction] = 'ease-out';
 			}
@@ -286,7 +285,6 @@
 					direction;
 
 				distance = this.options.direction == 'h' ? point.pageX - this.startX : point.pageY - this.startY;
-				// console.log(distance);
 				absDistance = Math.abs(distance);
 				this.direction = distance / absDistance;
 
@@ -301,7 +299,7 @@
 				e.stopPropagation();
 
 				if (this.direction != this.lockedDirection || this.cardToMove === undefined) {
-					this.cardToMove = this.direction < 0 ? this.nextCard : this.currCard; // 这里有改动，原先是>
+					this.cardToMove = this.direction < 0 ? this.nextCard : this.currCard;
 					this.lockedDirection = this.direction;
 
 					this[this.effect + 'Init']();
@@ -360,27 +358,27 @@
 					return;
 				}
 
-				this.page -= this.direction; // 这里有改动，原先是加号
+				this.page -= this.direction;
 				if (this.page >= this.pageCount) {
 					this.page = 0;
 				} else if (this.page < 0) {
 					this.page = this.pageCount - 1;
 				}
 
-				this.currCard -= this.direction; // 这里有改动，原先是加号
-				if (this.currCard >= this.cardsLen) { //这里有改变，原来是3
+				this.currCard -= this.direction;
+				if (this.currCard >= this.cardsLen) {
 					this.currCard = 0;
 				} else if (this.currCard < 0) {
-					this.currCard = this.cardsLen - 1; //这里有改变，原来是2
+					this.currCard = this.cardsLen - 1;
 				}
 
 				this.prevCard = this.currCard - 1;
 				if (this.prevCard < 0) {
-					this.prevCard = this.cardsLen - 1; //这里有改变，原来是2
+					this.prevCard = this.cardsLen - 1;
 				}
 
 				this.nextCard = this.currCard + 1;
-				if (this.nextCard == this.cardsLen) { //这里有改变，原来是3
+				if (this.nextCard == this.cardsLen) {
 					this.nextCard = 0;
 				}
 
@@ -395,9 +393,15 @@
 					this.cards[this.prevCard].style[utils.style.transform] = 'translate(' + (this.options.direction == 'v' ? '0, -100%' : '-100%, 0') + ')' + this.translateZ;
 					this.cards[this.nextCard].style[utils.style.transform] = 'translate(' + (this.options.direction == 'v' ? '0,100%' : '100%,0') + ')' + this.translateZ;
 				} else {
-					this.cards[this.currCard].style.zIndex = '100';
-					this.cards[this.nextCard].style.zIndex = '101';
-					this.cards[this.prevCard].style.zIndex = '99';
+					if(this.options.effect == 'rotate'){
+						this.cards[this.currCard].style.zIndex = '100';
+						this.cards[this.nextCard].style.zIndex = '99';
+						this.cards[this.prevCard].style.zIndex = '101';
+					}else{
+						this.cards[this.currCard].style.zIndex = '100';
+						this.cards[this.nextCard].style.zIndex = '101';
+						this.cards[this.prevCard].style.zIndex = '99';
+					}
 
 					this.cards[this.currCard].style[utils.style.transform] = 'translate(0,0)' + this.translateZ;
 					this.cards[this.prevCard].style[utils.style.transform] = 'translate(' + (this.options.direction == 'v' ? '0,-100%' : '-100%,0') + ')' + this.translateZ;
@@ -406,8 +410,8 @@
 			},
 
 			_updateContent: function() {
-				var newPage = this.page - this.direction, // 这里有改动，原先是加号
-					cardToUpdate = this.direction < 0 ? this.nextCard : this.prevCard; // 这里有改动，原先是>
+				var newPage = this.page - this.direction,
+					cardToUpdate = this.direction < 0 ? this.nextCard : this.prevCard;
 
 				if (newPage < 0) {
 					newPage = this.pageCount - 1;
@@ -445,7 +449,7 @@
 				if (next >= this.pageCount) {
 					next = 0;
 				}
-				this.prevCard = this.cardsLen - 1; //这里有改变，原来是2
+				this.prevCard = this.cardsLen - 1;
 				this.currCard = 0;
 				this.nextCard = 1;
 
@@ -469,107 +473,98 @@
 				this.enabled = false;
 			},
 
-
-
 			/**********************************************
 			 *
 			 * Effect Rotate
 			 *
 			 **********************************************/
 			_effectRotateInit: function() {
+				this.cardToMove = this.currCard;
 				if (this.direction < 0) {
-					if (this.options.direction == 'v') {
-						this.cardToMove = this.currCard;
-						this.cardToStay = this.prevCard;
-					} else {
-						this.cardToMove = this.currCard;
-						this.cardToStay = this.prevCard;
-					}
+					this.cardToStay = this.nextCard;
 				} else {
-					if (this.options.direction == 'v') {
-						this.cardToMove = this.nextCard;
-						this.cardToStay = this.currCard;
-					} else {
-						this.cardToMove = this.nextCard;
-						this.cardToStay = this.currCard;
-					}
+					this.cardToStay = this.prevCard;
 				}
 
+				//每次动画初始时，都需要对cardToStay进行位置的重新设定，因为在_effectRotateEnd或_effectRotateClose中对它进行了打乱
 				var cardToStay = this.cards[this.cardToStay].style;
 
-				if (this.direction < 0) {
-					if (this.options.direction == 'v') {
+				if (this.options.direction == 'v') {
+					this.cards[this.currCard].style.zIndex = '100';
+					this.cards[this.nextCard].style.zIndex = '101';
+					this.cards[this.prevCard].style.zIndex = '99';
+					if (this.direction < 0) {
+						cardToStay[utils.style.transform] = 'rotateX(' + this.options.deg + 'deg) translate(0,100%)' + this.translateZ;
+					}else{
 						cardToStay[utils.style.transform] = 'rotateX(0deg) translate(100%,0)' + this.translateZ;
-					} else {
-						cardToStay[utils.style.transform] = 'rotateY(' + this.options.deg + 'deg) translate(0,0)' + this.translateZ;
 					}
 				} else {
-					if (this.options.direction == 'v') {
-						cardToStay[utils.style.transform] = 'rotateX(' + this.options.deg + 'deg) translate(0,0)' + this.translateZ;
-					} else {
-						//cardToStay[utils.style.transform] = 'rotateY(0deg) translate(0,0)' + this.translateZ;
+					if (this.direction < 0) {
+						cardToStay[utils.style.transform] = 'rotateY(0deg) translate(0,0)' + this.translateZ;
+					}else{
+						cardToStay[utils.style.transform] = 'rotateY(' + this.options.deg + 'deg) translate(-100%,0)' + this.translateZ;
 					}
 				}
 			},
-
-			_effectRotateEnd: function() {
-				var cardToMove = this.cards[this.cardToMove].style,
-					cardToStay = this.cards[this.cardToStay].style;
-
-				cardToMove[utils.style.transitionDuration] = this.options.duration + 's';
-				cardToStay[utils.style.transitionDuration] = this.options.duration + 's';
-
-				if (this.direction > 0) {
-					if (this.options.direction == 'v') {
-						cardToMove[utils.style.transform] = 'rotateX(0deg) translate(0,100%)' + this.translateZ;
-						cardToStay[utils.style.transform] = 'rotateX(0deg)' + this.translateZ;
-					} else {
-						cardToMove[utils.style.transform] = 'rotateY(-' + this.options.deg + 'deg) translate(-100%,0)' + this.translateZ;
-						cardToStay[utils.style.transform] = 'rotateY(0deg)' + this.translateZ;
-					}
-				} else {
-					if (this.options.direction == 'v') {
-						cardToMove[utils.style.transform] = 'rotateX(0deg) translate(0,0)' + this.translateZ;
-						cardToStay[utils.style.transform] = 'rotateX(' + this.options.deg + 'deg)' + this.translateZ;
-					} else {
-						cardToMove[utils.style.transform] = 'rotateY(0deg) translate(0,0)' + this.translateZ;
-						cardToStay[utils.style.transform] = 'rotateY(' + this.options.deg + 'deg)' + this.translateZ;
-					}
-				}
-			},
-
 			_effectRotateMove: function(distance) {
 				var degCardToStay, degCardToMove;
 
 				if (this.options.direction == 'v') {
-					if (this.direction > 0) {
-						degCardToStay = this.options.deg / this.wrapperSize * Math.abs(distance);
-						degCardToMove = Math.min(-this.options.deg + this.options.deg / (this.wrapperSize / 1.2) * Math.abs(distance), 0);
+					if (this.direction < 0) {
+						degCardToMove = this.options.deg / this.wrapperSize * Math.abs(distance);
+						degCardToStay = Math.min(-this.options.deg + this.options.deg / (this.wrapperSize / 1.2) * Math.abs(distance), 0);
 						distance = 100 + 100 / this.wrapperSize * distance;
+						this.cards[this.cardToMove].style[utils.style.transform] = 'rotateX(' + degCardToMove + 'deg)' + this.translateZ;
+						this.cards[this.cardToStay].style[utils.style.transform] = 'rotateX(' + degCardToStay + 'deg) translate(0,' + distance + '%)' + this.translateZ;
 					} else {
 						degCardToStay = this.options.deg - this.options.deg / this.wrapperSize * Math.abs(distance);
 						degCardToMove = Math.min(-this.options.deg / (this.wrapperSize / 1.2) * Math.abs(distance), 0);
 						distance = 100 / this.wrapperSize * distance;
+						this.cards[this.cardToMove].style[utils.style.transform] = 'rotateX(' + degCardToMove + 'deg) translate(0,' + distance + '%)' + this.translateZ;
+						this.cards[this.cardToStay].style[utils.style.transform] = 'rotateX(' + degCardToStay + 'deg) translate(0,' + distance + '%)' + this.translateZ;
 					}
-
-					this.cards[this.cardToMove].style[utils.style.transform] = 'rotateX(' + degCardToMove + 'deg) translate(0,' + distance + '%)' + this.translateZ;
-					this.cards[this.cardToStay].style[utils.style.transform] = 'rotateX(' + degCardToStay + 'deg)' + this.translateZ;
 				} else {
-					if (this.direction > 0) {
+					if (this.direction < 0) {
 						degCardToStay = -this.options.deg / this.wrapperSize * Math.abs(distance);
 						degCardToMove = Math.min(-this.options.deg + this.options.deg / (this.wrapperSize / 1.2) * Math.abs(distance), 0);
-						distance = -100 - 100 / this.wrapperSize * distance;
+						distance = 100 / this.wrapperSize * distance;
+						this.cards[this.cardToMove].style[utils.style.transform] = 'rotateY(' + degCardToMove + 'deg) translate(' + distance + '%,0)' + this.translateZ;
+						this.cards[this.cardToStay].style[utils.style.transform] = 'rotateY(' + -degCardToStay + 'deg)' + this.translateZ;
 					} else {
+						degCardToMove = this.options.deg / this.wrapperSize * Math.abs(distance);
 						degCardToStay = Math.min(-this.options.deg + this.options.deg / (this.wrapperSize / 1.2) * Math.abs(distance), 0);
-						degCardToMove = -this.options.deg / this.wrapperSize * Math.abs(distance);
-						distance = -100 / this.wrapperSize * distance;
+						distance = -100 + 100 / this.wrapperSize * distance;
+						this.cards[this.cardToMove].style[utils.style.transform] = 'rotateY(' + degCardToMove + 'deg)' + this.translateZ;
+						this.cards[this.cardToStay].style[utils.style.transform] = 'rotateY(' + degCardToStay + 'deg) translate(' + distance + '%,0)' + this.translateZ;
 					}
-
-					this.cards[this.cardToMove].style[utils.style.transform] = 'rotateY(' + degCardToMove + 'deg) translate(' + distance + '%,0)' + this.translateZ;
-					this.cards[this.cardToStay].style[utils.style.transform] = 'rotateY(' + -degCardToStay + 'deg)' + this.translateZ;
 				}
 			},
-
+			//动画没有完成，回归原位
+			_effectRotateEnd: function() {
+				var cardToMove = this.cards[this.cardToMove].style,
+					cardToStay = this.cards[this.cardToStay].style;
+				cardToMove[utils.style.transitionDuration] = this.options.duration + 's';
+				cardToStay[utils.style.transitionDuration] = this.options.duration + 's';
+				
+				if (this.options.direction == 'v') {
+					if (this.direction < 0) {
+						cardToStay[utils.style.transform] = 'rotateX(0deg) translate(0,100%)' + this.translateZ;
+						cardToMove[utils.style.transform] = 'rotateX(0deg)' + this.translateZ;
+					}else{
+						cardToMove[utils.style.transform] = 'rotateX(0deg) translate(0,0)' + this.translateZ;
+						cardToStay[utils.style.transform] = 'rotateX(' + this.options.deg + 'deg)' + this.translateZ;
+					}
+				} else {
+					if (this.direction < 0) {
+						cardToMove[utils.style.transform] = 'rotateY(0deg)' + this.translateZ;
+						cardToStay[utils.style.transform] = 'rotateY(-' + this.options.deg + 'deg) translate(-100%,0)' + this.translateZ;
+					}else{
+						cardToMove[utils.style.transform] = 'rotateY(0deg) translate(0,0)' + this.translateZ;
+						cardToStay[utils.style.transform] = 'rotateY(-' + this.options.deg + 'deg) translate(-100%,0)' + this.translateZ;
+					}
+				}
+			},
+			//动画顺利完成了
 			_effectRotateClose: function() {
 				var cardToMove = this.cards[this.cardToMove],
 					cardToStay = this.cards[this.cardToStay];
@@ -579,22 +574,22 @@
 
 				cardToMove.style[utils.style.transitionDuration] = this.options.duration + 's';
 				cardToStay.style[utils.style.transitionDuration] = this.options.duration + 's';
-
-				if (this.direction > 0) {
-					if (this.options.direction == 'v') {
-						cardToMove.style[utils.style.transform] = 'rotateX(0deg) translate(0,0)' + this.translateZ;
-						cardToStay.style[utils.style.transform] = 'rotateX(' + this.options.deg + 'deg)' + this.translateZ;
-					} else {
-						cardToMove.style[utils.style.transform] = 'rotateY(0deg) translate(0,0)' + this.translateZ;
-						cardToStay.style[utils.style.transform] = 'rotateY(' + this.options.deg + 'deg)' + this.translateZ;
-					}
-				} else {
-					if (this.options.direction == 'v') {
+				
+				if (this.options.direction == 'v') {
+					if (this.direction < 0) {
+						cardToMove.style[utils.style.transform] = 'rotateX(' + this.options.deg + 'deg) translate(0,100%)' + this.translateZ;
+						cardToStay.style[utils.style.transform] = 'rotateX(0deg) translate(0,0)' + this.translateZ;
+					}else{
 						cardToMove.style[utils.style.transform] = 'rotateX(-' + this.options.deg + 'deg) translate(0,100%)' + this.translateZ;
 						cardToStay.style[utils.style.transform] = 'rotateX(0deg)' + this.translateZ;
-					} else {
+					}
+				} else {
+					if (this.direction < 0) {
+						cardToStay.style[utils.style.transform] = 'rotateY(0deg) translate(0,0)' + this.translateZ;
+						cardToMove.style[utils.style.transform] = 'rotateY(-' + this.options.deg + 'deg)  translate(-100%,0)' + this.translateZ;
+					}else{
 						cardToMove.style[utils.style.transform] = 'rotateY(-' + this.options.deg + 'deg) translate(-100%,0)' + this.translateZ;
-						cardToStay.style[utils.style.transform] = 'rotateY(0deg)' + this.translateZ;
+						cardToStay.style[utils.style.transform] = 'rotateY(0deg) translate(0,0)' + this.translateZ;
 					}
 				}
 
@@ -604,24 +599,23 @@
 				utils.addEvent(cardToMove, 'MSTransitionEnd', this);
 			},
 
-
 			/**********************************************
 			 *
 			 * Effect Zoom
+			 * 约定：手向上滑时，current放大、淡出，next淡入，查看next；
+			 *      手向下滑时，current缩小、淡出，prev淡入，查看prev
 			 *
 			 **********************************************/
 			_effectZoomInit: function() {
 				if (this.direction < 0) {
 					this.cardToMove = this.currCard;
-					this.cardToStay = this.prevCard;
+					this.cardToStay = this.nextCard;
 				} else {
-					this.cardToMove = this.nextCard;
+					this.cardToMove = this.prevCard;
 					this.cardToStay = this.currCard;
 				}
-
 				var cardToStay = this.cards[this.cardToStay].style,
 					cardToMove = this.cards[this.cardToMove].style;
-
 				if (this.direction < 0) {
 					cardToStay[utils.style.transform] = 'translate(0,0) scale(0.5)' + this.translateZ;
 					cardToStay.opacity = '0';
@@ -630,26 +624,6 @@
 					cardToMove.opacity = '0';
 				}
 			},
-
-			_effectZoomEnd: function() {
-				var cardToMove = this.cards[this.cardToMove].style,
-					cardToStay = this.cards[this.cardToStay].style;
-
-				cardToMove[utils.style.transitionDuration] = this.options.duration + 's';
-				cardToStay[utils.style.transitionDuration] = this.options.duration + 's';
-
-				if (this.direction > 0) {
-					cardToMove[utils.style.transform] = 'scale(2)' + this.translateZ;
-					cardToMove.opacity = '0';
-					cardToStay[utils.style.transform] = 'scale(1)' + this.translateZ;
-					cardToStay.opacity = '1';
-				} else {
-					cardToMove[utils.style.transform] = 'scale(1)' + this.translateZ;
-					cardToMove.opacity = '1';
-					cardToStay[utils.style.transform] = 'scale(.5)' + this.translateZ;
-				}
-			},
-
 			_effectZoomMove: function(distance) {
 				var scaleCardToStay,
 					scaleCardToMove,
@@ -674,9 +648,27 @@
 					this.cards[this.cardToStay].style[utils.style.transform] = 'scale(' + scaleCardToStay + ')' + this.translateZ;
 					this.cards[this.cardToStay].style.opacity = opacity;
 				}
-
 			},
+			//动画没有完成，回归原位
+			_effectZoomEnd: function() {
+				var cardToMove = this.cards[this.cardToMove].style,
+					cardToStay = this.cards[this.cardToStay].style;
 
+				cardToMove[utils.style.transitionDuration] = this.options.duration + 's';
+				cardToStay[utils.style.transitionDuration] = this.options.duration + 's';
+
+				if (this.direction > 0) {
+					cardToMove[utils.style.transform] = 'scale(2)' + this.translateZ;
+					cardToMove.opacity = '0';
+					cardToStay[utils.style.transform] = 'scale(1)' + this.translateZ;
+					cardToStay.opacity = '1';
+				} else {
+					cardToMove[utils.style.transform] = 'scale(1)' + this.translateZ;
+					cardToMove.opacity = '1';
+					cardToStay[utils.style.transform] = 'scale(.5)' + this.translateZ;
+				}
+			},
+			//动画顺利完成了
 			_effectZoomClose: function() {
 				var cardToMove = this.cards[this.cardToMove],
 					cardToStay = this.cards[this.cardToStay];
@@ -703,7 +695,6 @@
 				utils.addEvent(cardToMove, 'oTransitionEnd', this);
 				utils.addEvent(cardToMove, 'MSTransitionEnd', this);
 			},
-
 
 			/**********************************************
 			 *
