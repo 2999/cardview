@@ -666,6 +666,7 @@
 					cardToMove[utils.style.transform] = 'scale(1)' + this.translateZ;
 					cardToMove.opacity = '1';
 					cardToStay[utils.style.transform] = 'scale(.5)' + this.translateZ;
+					cardToStay.opacity = '0';
 				}
 			},
 			//动画顺利完成了
@@ -683,6 +684,7 @@
 					cardToMove.style[utils.style.transform] = 'scale(1)' + this.translateZ;
 					cardToMove.style.opacity = '1';
 					cardToStay.style[utils.style.transform] = 'scale(.5)';
+					cardToStay.style.opacity = '0';
 				} else {
 					cardToMove.style[utils.style.transform] = 'scale(2)' + this.translateZ;
 					cardToMove.style.opacity = '0';
