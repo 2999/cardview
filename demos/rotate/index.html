@@ -43,7 +43,8 @@ function loaded () {
 	deck = new CardView('#wrapper', {
 		direction: 'v',
  		dataset: data,
-		onUpdateContent: function (el, data, index) {
+		loop: true,
+		onUpdateContent: function (el, data, dataIndex) {
 			if(data){
 				el.querySelector('img').src = data.img;
 				el.querySelector('h3').innerHTML = data.title;

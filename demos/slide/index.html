@@ -44,7 +44,8 @@ function loaded () {
 		effect: 'slide',
 		dataset: data,
 		direction: 'h',
-		onUpdateContent: function (el, data, index) {
+		loop: true,
+		onUpdateContent: function (el, data, dataIndex) {
 			el.querySelector('img').src = data.img;
 			el.querySelector('h3').innerHTML = data.title;
 			el.querySelector('p').innerHTML = data.text;

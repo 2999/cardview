@@ -11,13 +11,36 @@ The code is still a bit messy and betaish but maybe you can make good use of it.
 
 HomePage：http://jiangzhizi.github.io/cardview/
 
+
 对其做了如下修改：
 
 - 增加了Effect gallery，
-- 增加了对CMD支持，
+- 增加了部分API，
+- 增加了CMD支持，
 - 对代码其它部分进行了较多改动。
 
-Demos：
+=========
+
+### API:
+
+ - Config:
+    - direction: 'v', // h 、v 
+    - effect: 'rotate', //rotate 、 zoom 、 slide 、 gallerystartPage: 0,
+    - loop: true, //循环播放
+    - pageDotShow: false, //进度提示点，样式可自定义
+    - deg: 25,
+    - duration: .28,
+    - perspective: '300px',
+    - resizePolling: 100,
+    - dataset: [], //必传
+ - Event:
+    - onUpdateContent: function(el,data,dataIndex) {}
+ - Method:
+    - destroy()
+    - enable()
+    - disable()
+
+### Demos：
 
 - [gallery](http://jiangzhizi.github.io/cardview/demos/gallery/index.html)
 
