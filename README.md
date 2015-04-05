@@ -25,7 +25,7 @@ HomePage：http://jiangzhizi.github.io/cardview/
 
  - Config:
     - direction: 'v', // h 、v 
-    - effect: 'rotate', //rotate 、 zoom 、 slide 、 gallerystartPage: 0,
+    - effect: 'rotate', //rotate 、 zoom 、 slide 、 gallery
     - loop: true, //循环播放
     - pageDotShow: false, //进度提示点，样式可自定义
     - deg: 25,
