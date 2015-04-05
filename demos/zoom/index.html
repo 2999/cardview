@@ -6,8 +6,7 @@
 
 <title>zoom - Cardview</title>
 
-<script type="text/javascript" src="../../javascripts/cardview.js"></script>
-
+<script type="text/javascript" src="../../src/cardview.js"></script>
 <script type="text/javascript">
 
 var deck;
@@ -43,7 +42,8 @@ function loaded () {
 	deck = new CardView('#wrapper', {
 		effect: 'zoom',
 		dataset: data,
-		onUpdateContent: function (el, data, index) {
+		loop: true,
+		onUpdateContent: function (el, data, dataIndex) {
 			el.querySelector('img').src = data.img;
 			el.querySelector('h3').innerHTML = data.title;
 			el.querySelector('p').innerHTML = data.text;

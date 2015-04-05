@@ -111,7 +111,9 @@
 			this.options = {
 				direction: 'v',
 				effect: 'rotate',
-				startPage: 0,
+				startPage: 0, //关于startPage，还有bug，待修
+				loop: true, //循环播放
+				pageDotShow: false, //表示当前播放index的提示小点点
 
 				deg: 25,
 				duration: .28,
@@ -124,9 +126,7 @@
 				HWCompositing: true,
 			};
 
-			for (var i in options) {
-				this.options[i] = options[i];
-			}
+			utils.extend(this.options, options);
 
 			//如果只有一页，渲染之后直接返回
 			if (this.cardsLen <= 1 || this.options.dataset.length <= 1) {
@@ -143,6 +143,18 @@
 			this.page = 0;
 			this.pageCount = Math.max(this.options.dataset.length, this.cardsLen);
 
+			if(this.options.pageDotShow){
+				var pageDotHtml = '<ul class="page-dots" id="dot-list">';
+				for(var i = 0; i < this.pageCount; i++){
+					pageDotHtml += '<li class="dot"></li>';
+				}
+				pageDotHtml += '</ul>';
+				var ele = document.createElement('div');
+				ele.setAttribute('id', 'page-dots-wrp');
+				document.body.appendChild(ele);
+				ele.innerHTML = pageDotHtml;
+			}
+
 			this.wrapper.style[utils.style.perspective] = this.options.perspective;
 
 			for (var i = 0; i < this.cardsLen; i++) {
@@ -152,7 +164,7 @@
 
 			this.refresh(); // get the page size
 
-			this.goToPage(this.options.startPage); // load initial content
+			this.initGoToPage(this.options.startPage); // load initial content
 
 			this._initEvents();
 
@@ -292,6 +304,11 @@
 				if (absDistance < 10) {
 					return;
 				}
+				// console.log(this.page, this.pageCount);
+				//如果不循环播放
+				if(!this.options.loop && (this.page === 0 && this.direction > 0 || this.page === this.pageCount - 1 && this.direction < 0)){
+					return;
+				}
 
 				this.moved = true;
 
@@ -418,13 +435,19 @@
 				} else if (newPage >= this.pageCount) {
 					newPage = 0;
 				}
-
+				if(this.options.pageDotShow){
+					var _this = this;
+					setTimeout(function(){
+						document.querySelector('#dot-list .dot.selected') && document.querySelector('#dot-list .dot.selected').classList.remove('selected');
+						document.querySelectorAll('#dot-list .dot')[_this.page].classList.add('selected');
+					}, 15);
+				}
 				this.options.onUpdateContent(this.cards[cardToUpdate], this.options.dataset[newPage], newPage);
 
 				this.enable();
 			},
 
-			goToPage: function(n) {
+			initGoToPage: function(n) {
 				if (n == 'last') {
 					n = this.pageCount - 1;
 				}else if (n == 'prev') {
@@ -455,10 +478,18 @@
 
 				//注意上面：card的计数，与page的计数，是不同的(card为dom元素，page为数组)，要区分清楚。但它们均从0开始。
 
-				//onUpdateContent三个参数的意义分别是：需要渲染的DOM，需要用到的数据，该数据在全部数据中的“页码”（也就是第几页）
+				//onUpdateContent三个参数的意义分别是：
+				//		需要渲染的DOM，
+				//		需要用到的数据，
+				//		该数据在全部数据中的“页码”（也就是第几页数据）
 				this.options.onUpdateContent(this.cards[this.currCard], this.options.dataset[n], n);
 				//对当前显示的card添加一个class
 				this.cards[this.currCard].classList.add('current-card');
+				if(this.options.pageDotShow){
+					setTimeout(function(){
+						document.querySelector('#dot-list .dot') && document.querySelector('#dot-list .dot').classList.add('selected');
+					}, 15);
+				}
 				this.options.onUpdateContent(this.cards[this.nextCard], this.options.dataset[next], next);
 				this.options.onUpdateContent(this.cards[this.prevCard], this.options.dataset[prev], prev);
 

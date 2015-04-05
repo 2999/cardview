@@ -6,8 +6,7 @@
 
 <title>gallery - Cardview</title>
 
-<script type="text/javascript" src="../../javascripts/cardview.js"></script>
-
+<script type="text/javascript" src="../../src/cardview.js"></script>
 <script type="text/javascript">
 
 var deck;
@@ -44,12 +43,20 @@ function loaded () {
 		direction: 'h',
 		effect: 'gallery',
 		dataset: data,
-		onUpdateContent: function (el, data, index) {
+		loop: false,
+		pageDotShow: true,
+		onUpdateContent: function (el, data, dataIndex) {
 			el.querySelector('img').src = data.img;
 			el.querySelector('h3').innerHTML = data.title;
 			el.querySelector('p').innerHTML = data.text;
 		}
 	});
+	document.querySelector('#disableBtn').onclick = function(){
+		deck.disable();
+	};
+	document.querySelector('#enableBtn').onclick = function(){
+		deck.enable();
+	};
 }
 
 document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
@@ -165,11 +172,46 @@ body {
 	margin-bottom: 10px;
 	text-align: center;
 }
+
+.page-dots {
+	position: absolute;
+	z-index: 100;
+	top: 520px;
+	width: 100%;
+	text-align: center;
+}
+.dot {
+	display: inline-block;
+	width: 5px;
+	height: 5px;
+	margin: 0 4px;
+	border: 0;
+	border-radius: 50%;
+	background-color: #ccc;
+}
+.dot.selected{
+	background-color: #003966;
+}
+
+#disableBtn, #enableBtn{
+	position: absolute;
+	z-index: 1000;
+	width: 80px;
+	height: 30px;
+	text-align: center;
+	left: 30px;
+	top: 510px;
+}
+#enableBtn{
+	left: 120px;
+}
+
 </style>
 
 </head>
 <body onload="loaded()">
-
+<button id="disableBtn">disable</button>
+<button id="enableBtn">enable</button>
 <div id="wrapper">
 	<ul id="deck">
 		<li class="card"><div>
