@@ -45,6 +45,7 @@ function loaded () {
 		dataset: data,
 		loop: false,
 		pageDotShow: true,
+		pageDotContainer: '#page-dot-container',
 		onUpdateContent: function (el, data, dataIndex) {
 			el.querySelector('img').src = data.img;
 			el.querySelector('h3').innerHTML = data.title;
@@ -235,6 +236,7 @@ AAAAAElFTkSuQmCC" alt="thumb" width="125" height="125">
 		</div></li>
 	</ul>
 </div>
+<div id="page-dot-container"></div>
 
 </body>
 </html>

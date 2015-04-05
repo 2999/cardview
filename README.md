@@ -28,6 +28,7 @@ HomePage：http://jiangzhizi.github.io/cardview/
     - effect: 'rotate', //rotate 、 zoom 、 slide 、 gallery
     - loop: true, //循环播放
     - pageDotShow: false, //进度提示点，样式可自定义
+    - pageDotContainer: 'body',
     - deg: 25,
     - duration: .28,
     - perspective: '300px',

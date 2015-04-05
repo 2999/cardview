@@ -114,6 +114,7 @@
 				startPage: 0, //关于startPage，还有bug，待修
 				loop: true, //循环播放
 				pageDotShow: false, //表示当前播放index的提示小点点
+				pageDotContainer: 'body',
 
 				deg: 25,
 				duration: .28,
@@ -151,7 +152,8 @@
 				pageDotHtml += '</ul>';
 				var ele = document.createElement('div');
 				ele.setAttribute('id', 'page-dots-wrp');
-				document.body.appendChild(ele);
+				// this.options.pageDotContainer = this.options.pageDotContainer ? this.options.pageDotContainer : 'body';
+				document.querySelector(this.options.pageDotContainer).appendChild(ele);
 				ele.innerHTML = pageDotHtml;
 			}
 
