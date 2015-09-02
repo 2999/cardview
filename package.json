@@ -1,8 +1,8 @@
 {
   "name": "cardview-m",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "cardview. you can see the demo here: http://jiangzhizi.github.io/cardview/",
-  "main": "index.js",
+  "main": "src/cardview.js",
   "author": "",
   "license": "MIT"
 }
